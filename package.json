@@ -7,14 +7,20 @@
     "test": "nx run-many --target=test --projects=server,client"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "^3.6.0",
+    "@mui/material": "^5.15.20",
     "@nestjs/common": "9.2.1",
     "@nestjs/core": "9.2.1",
     "@nestjs/platform-express": "9.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.52.0",
     "react-router": "^6.3.0",
     "react-router-dom": "6.4.3",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.14.5",
