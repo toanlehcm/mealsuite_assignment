@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Ticket } from "@acme/shared-models";
 import styles from "./tickets.module.css";
 import TicketForm from "./TicketForm";
@@ -16,6 +16,11 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   const location = useLocation(); // Get params after the ?
   const navigate = useNavigate();
   const match = useMatch("/"); // To get path, similar to nested routing.
+  const [ticketList, setTicketList] = useState<Ticket[]>(tickets);
+
+  useEffect(() => {
+    setTicketList(tickets);
+  }, [tickets]);
 
   const [filterStatus, setFilterStatus] = useState(() => {
     const params = queryString.parse(location.search);
@@ -63,6 +68,11 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     });
   };
 
+  // Rendered ticket list only change when ticket list and filter status change.
+  const renderedTicketList = useMemo(() => {
+    return ticketList.filter((ticket) => filterStatus === "all" || filterStatus === (ticket.completed ? "completed" : "incomplete"));
+  }, [ticketList, filterStatus]);
+
   return (
     <div className={styles["tickets"]}>
       <h2>Tickets</h2>
@@ -81,9 +91,9 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
         <Button onClick={() => showIncomplete()}>Show Incomplete</Button>
       </Box>
 
-      {tickets ? (
+      {renderedTicketList ? (
         <ul>
-          {tickets.map((t) => (
+          {renderedTicketList.map((t) => (
             <li key={t.id}>
               Ticket: {t.id}, {t.description}
             </li>
