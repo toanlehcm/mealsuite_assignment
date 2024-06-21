@@ -29,8 +29,9 @@ export interface TicketsProps {
 export function Tickets({ tickets, setTickets }: TicketsProps) {
   const location = useLocation(); // Get params after the ?
   const navigate = useNavigate();
-  const match = useMatch('/'); // To get path, similar to nested routing.
+  const match = useMatch('/');
   const [ticketList, setTicketList] = useState<Ticket[]>(tickets);
+
   const [filterStatus, setFilterStatus] = useState(() => {
     const params = queryString.parse(location.search);
 
@@ -47,6 +48,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     setFilterStatus(params['status'] || FILTER_STATUS.all);
   }, [location.search]);
 
+  // Create new ticket.
   const handleTicketFormSubmit = async (ticket: Ticket) => {
     try {
       const newTicket = await ticketApi.add(ticket);
@@ -56,6 +58,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     }
   };
 
+  // Filter all status.
   const showAll = () => {
     const queryParams = { status: FILTER_STATUS.all };
     navigate({
@@ -64,6 +67,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     });
   };
 
+  // Filter complete status.
   const showComplete = () => {
     const queryParams = { status: FILTER_STATUS.completed };
     navigate({
@@ -72,6 +76,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     });
   };
 
+  // Filter incomplete status.
   const showIncomplete = () => {
     const queryParams = { status: FILTER_STATUS.incomplete };
     navigate({
@@ -84,26 +89,6 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   const renderedTicketList = useMemo(() => {
     return ticketList.filter((ticket) => filterStatus === FILTER_STATUS.all || filterStatus === (ticket.completed ? FILTER_STATUS.completed : FILTER_STATUS.incomplete));
   }, [ticketList, filterStatus]);
-
-  const makeComplete = async (ticket: Ticket) => {
-    try {
-      await ticketApi.markTicketAsComplete(ticket.id);
-      const newTicketList = await ticketApi.getAll();
-      setTicketList(newTicketList);
-    } catch (error) {
-      console.error('Failed to mark ticket as complete', error);
-    }
-  };
-
-  const makeIncomplete = async (ticket: Ticket) => {
-    try {
-      await ticketApi.markTicketAsIncomplete(ticket.id);
-      const newTicketList = await ticketApi.getAll();
-      setTicketList(newTicketList);
-    } catch (error) {
-      console.error('Failed to mark ticket as incomplete', error);
-    }
-  };
 
   return (
     <div className={styles['tickets']}>
@@ -159,15 +144,6 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                     {ticketItem.description}
                   </TableCell>
                   <TableCell align='center' sx={{ width: '10%' }}>
-                    {/* <Button
-                      variant='outlined'
-                      color={ticketItem.completed ? 'success' : 'error'}
-                      onClick={() => {
-                        ticketItem.completed ? makeIncomplete(ticketItem) : makeComplete(ticketItem);
-                      }}
-                    >
-                      {ticketItem.completed ? 'Complete' : 'Incomplete'}
-                    </Button> */}
                     <Box component={'span'} sx={{ color: ticketItem.completed ? 'green' : 'red' }}>
                       {ticketItem.completed ? FILTER_STATUS.completed.toUpperCase() : FILTER_STATUS.incomplete.toUpperCase()}
                     </Box>

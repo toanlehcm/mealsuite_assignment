@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { FILTER_STATUS } from '../tickets/tickets';
-import { Box, IconButton } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import UserForm from './UserForm';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -38,9 +38,11 @@ export function TicketDetails({ users }: TicketDetailsProps) {
     fetchTicket();
   }, [id]);
 
+  // Get assignee.
   useEffect(() => {
     if (ticket && users) {
       const user = users.find((user) => user.id === ticket.assigneeId) || null;
+
       if (user) {
         setAssignee(user);
       }
@@ -69,6 +71,26 @@ export function TicketDetails({ users }: TicketDetailsProps) {
     }
   };
 
+  const makeComplete = async (ticket: Ticket) => {
+    try {
+      await ticketApi.markTicketAsComplete(ticket.id);
+      const ticketUpdated = await ticketApi.get(ticket.id);
+      setTicket(ticketUpdated);
+    } catch (error) {
+      console.error('Failed to mark ticket as complete', error);
+    }
+  };
+
+  const makeIncomplete = async (ticket: Ticket) => {
+    try {
+      await ticketApi.markTicketAsIncomplete(ticket.id);
+      const ticketUpdated = await ticketApi.get(ticket.id);
+      setTicket(ticketUpdated);
+    } catch (error) {
+      console.error('Failed to mark ticket as incomplete', error);
+    }
+  };
+
   return (
     <div className={styles['container']}>
       <h1>Welcome to TicketDetails!</h1>
@@ -82,13 +104,13 @@ export function TicketDetails({ users }: TicketDetailsProps) {
               <TableCell align='center' sx={{ width: '10%' }}>
                 ID
               </TableCell>
-              <TableCell align='center' sx={{ width: '65%' }}>
+              <TableCell align='center' sx={{ width: '50%' }}>
                 Ticket
               </TableCell>
-              <TableCell align='center' sx={{ width: '15%' }}>
+              <TableCell align='center' sx={{ width: '20%' }}>
                 Assign to
               </TableCell>
-              <TableCell align='center' sx={{ width: '10%' }}>
+              <TableCell align='center' sx={{ width: '20%' }}>
                 Status
               </TableCell>
             </TableRow>
@@ -100,10 +122,10 @@ export function TicketDetails({ users }: TicketDetailsProps) {
                 <TableCell align='center' sx={{ width: '10%' }}>
                   {ticket.id}
                 </TableCell>
-                <TableCell align='left' sx={{ width: '65%' }}>
+                <TableCell align='left' sx={{ width: '50%' }}>
                   {ticket.description}
                 </TableCell>
-                <TableCell align='center' sx={{ width: '15%' }}>
+                <TableCell align='center' sx={{ width: '20%' }}>
                   {assignee ? (
                     <Box
                       component={'span'}
@@ -124,10 +146,16 @@ export function TicketDetails({ users }: TicketDetailsProps) {
                     ''
                   )}
                 </TableCell>
-                <TableCell align='center' sx={{ width: '10%' }}>
-                  <Box component={'span'} sx={{ color: ticket.completed ? 'green' : 'red' }}>
-                    {ticket.completed ? FILTER_STATUS.completed.toUpperCase() : FILTER_STATUS.incomplete.toUpperCase()}
-                  </Box>
+                <TableCell align='center' sx={{ width: '20%' }}>
+                  <Button
+                    variant='outlined'
+                    color={ticket.completed ? 'success' : 'error'}
+                    onClick={() => {
+                      ticket.completed ? makeIncomplete(ticket) : makeComplete(ticket);
+                    }}
+                  >
+                    {ticket.completed ? 'Complete' : 'Incomplete'}
+                  </Button>
                 </TableCell>
               </TableRow>
             </TableBody>
