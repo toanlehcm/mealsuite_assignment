@@ -13,9 +13,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import InfoIcon from '@mui/icons-material/Info';
 
-const FILTER_STATUS = {
+export const FILTER_STATUS = {
   all: 'all',
   completed: 'completed',
   incomplete: 'incomplete',
@@ -170,8 +170,12 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                     </Button>
                   </TableCell>
                   <TableCell align='center' sx={{ width: '10%' }}>
-                    <IconButton>
-                      <VisibilityIcon />
+                    <IconButton
+                      onClick={() => {
+                        navigate(`/${ticketItem.id}`);
+                      }}
+                    >
+                      <InfoIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>

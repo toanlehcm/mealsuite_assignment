@@ -7,7 +7,7 @@ const ticketApi = {
     return axiosClient.get(url);
   },
 
-  get(id: number) {
+  get(id: number): Promise<Ticket> {
     const url = `/tickets/${id}`;
     return axiosClient.get(url);
   },
