@@ -13,7 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import InfoIcon from '@mui/icons-material/Info';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const FILTER_STATUS = {
   all: 'all',
@@ -143,7 +143,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                 Status
               </TableCell>
               <TableCell align='center' sx={{ width: '10%' }}>
-                Detail
+                Edit
               </TableCell>
             </TableRow>
           </TableHead>
@@ -159,7 +159,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                     {ticketItem.description}
                   </TableCell>
                   <TableCell align='center' sx={{ width: '10%' }}>
-                    <Button
+                    {/* <Button
                       variant='outlined'
                       color={ticketItem.completed ? 'success' : 'error'}
                       onClick={() => {
@@ -167,7 +167,10 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                       }}
                     >
                       {ticketItem.completed ? 'Complete' : 'Incomplete'}
-                    </Button>
+                    </Button> */}
+                    <Box component={'span'} sx={{ color: ticketItem.completed ? 'green' : 'red' }}>
+                      {ticketItem.completed ? FILTER_STATUS.completed.toUpperCase() : FILTER_STATUS.incomplete.toUpperCase()}
+                    </Box>
                   </TableCell>
                   <TableCell align='center' sx={{ width: '10%' }}>
                     <IconButton
@@ -175,7 +178,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                         navigate(`/${ticketItem.id}`);
                       }}
                     >
-                      <InfoIcon />
+                      <EditIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
