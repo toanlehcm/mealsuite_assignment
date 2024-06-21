@@ -1,10 +1,10 @@
-import axiosClient from "./axiosClient";
-import { Ticket } from "@acme/shared-models";
+import axiosClient from './axiosClient';
+import { Ticket } from '@acme/shared-models';
 
 const ticketApi = {
-  getAll(params: Ticket[]) {
-    const url = "/tickets";
-    return axiosClient.get(url, { params });
+  getAll(): Promise<Ticket[]> {
+    const url = '/tickets';
+    return axiosClient.get(url);
   },
 
   get(id: number) {
@@ -12,7 +12,7 @@ const ticketApi = {
     return axiosClient.get(url);
   },
 
-  add(data: Omit<Ticket, "id">): Promise<Ticket> {
+  add(data: Omit<Ticket, 'id'>): Promise<Ticket> {
     const url = `/tickets`;
     return axiosClient.post(url, data);
   },

@@ -85,8 +85,14 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     return ticketList.filter((ticket) => filterStatus === FILTER_STATUS.all || filterStatus === (ticket.completed ? FILTER_STATUS.completed : FILTER_STATUS.incomplete));
   }, [ticketList, filterStatus]);
 
-  const handleComplete = (ticketId: number) => {
-    // console.log("ticketId", ticketId);
+  const handleComplete = async (ticket: Ticket) => {
+    try {
+      await ticketApi.markTicketAsComplete(ticket.id);
+      const newTicketList = await ticketApi.getAll();
+      setTicketList(newTicketList);
+    } catch (error) {
+      console.error('Failed to create ticket', error);
+    }
   };
 
   return (
@@ -145,11 +151,12 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                   <TableCell align='center' sx={{ width: '10%' }}>
                     <Button
                       variant='outlined'
+                      color={ticketItem.completed ? 'success' : 'error'}
                       onClick={() => {
-                        handleComplete(ticketItem.id);
+                        handleComplete(ticketItem);
                       }}
                     >
-                      Complete
+                      {ticketItem.completed ? 'Complete' : 'Incomplete'}
                     </Button>
                   </TableCell>
                   <TableCell align='center' sx={{ width: '10%' }}>
