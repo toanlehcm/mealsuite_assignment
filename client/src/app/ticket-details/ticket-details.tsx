@@ -11,8 +11,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { FILTER_STATUS } from '../tickets/tickets';
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import UserForm from './UserForm';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 /* eslint-disable-next-line */
 export interface TicketDetailsProps {
@@ -57,6 +58,17 @@ export function TicketDetails({ users }: TicketDetailsProps) {
     }
   };
 
+  const unassignUserFromTicket = async () => {
+    if (ticket) {
+      try {
+        await ticketApi.unAssignUserFromTicket(ticket.id);
+        setAssignee(null);
+      } catch (error) {
+        console.error('Failed to unassign user from ticket', error);
+      }
+    }
+  };
+
   return (
     <div className={styles['container']}>
       <h1>Welcome to TicketDetails!</h1>
@@ -70,10 +82,10 @@ export function TicketDetails({ users }: TicketDetailsProps) {
               <TableCell align='center' sx={{ width: '10%' }}>
                 ID
               </TableCell>
-              <TableCell align='center' sx={{ width: '70%' }}>
+              <TableCell align='center' sx={{ width: '65%' }}>
                 Ticket
               </TableCell>
-              <TableCell align='center' sx={{ width: '10%' }}>
+              <TableCell align='center' sx={{ width: '15%' }}>
                 Assign to
               </TableCell>
               <TableCell align='center' sx={{ width: '10%' }}>
@@ -88,11 +100,29 @@ export function TicketDetails({ users }: TicketDetailsProps) {
                 <TableCell align='center' sx={{ width: '10%' }}>
                   {ticket.id}
                 </TableCell>
-                <TableCell align='left' sx={{ width: '70%' }}>
+                <TableCell align='left' sx={{ width: '65%' }}>
                   {ticket.description}
                 </TableCell>
-                <TableCell align='center' sx={{ width: '10%' }}>
-                  {assignee ? assignee.name : ''}
+                <TableCell align='center' sx={{ width: '15%' }}>
+                  {assignee ? (
+                    <Box
+                      component={'span'}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      {assignee.name}
+
+                      <IconButton onClick={unassignUserFromTicket}>
+                        <CancelIcon />
+                      </IconButton>
+                    </Box>
+                  ) : (
+                    ''
+                  )}
                 </TableCell>
                 <TableCell align='center' sx={{ width: '10%' }}>
                   <Box component={'span'} sx={{ color: ticket.completed ? 'green' : 'red' }}>
