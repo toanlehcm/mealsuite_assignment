@@ -83,7 +83,7 @@ export function TicketDetails({ users }: TicketDetailsProps) {
 
   const makeIncomplete = async (ticketItem: Ticket) => {
     try {
-      // Update the ticket's completed status.
+      // Update the ticket's incomplete status.
       const updatedTicket: Ticket = { ...ticketItem, completed: false };
 
       // Update the state with the new ticket.
