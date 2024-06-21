@@ -33,7 +33,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Tickets tickets={tickets} setTickets={setTickets} />} />
         {/* Hint: Try `npx nx g component TicketDetails --project=client --no-export` to generate this component  */}
-        <Route path='/:id' element={<TicketDetails />} />
+        <Route path='/:id' element={<TicketDetails users={users} />} />
       </Routes>
     </div>
   );

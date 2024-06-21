@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Ticket } from '@acme/shared-models';
+import { Ticket, User } from '@acme/shared-models';
 import styles from './ticket-details.module.css';
 import ticketApi from 'client/src/api/ticketApi';
 import Table from '@mui/material/Table';
@@ -12,13 +12,17 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { FILTER_STATUS } from '../tickets/tickets';
 import { Box } from '@mui/material';
+import UserForm from './UserForm';
 
 /* eslint-disable-next-line */
-export interface TicketDetailsProps {}
+export interface TicketDetailsProps {
+  users: User[];
+}
 
-export function TicketDetails(props: TicketDetailsProps) {
+export function TicketDetails({ users }: TicketDetailsProps) {
   const { id } = useParams<{ id: string }>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [assignee, setAssignee] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -33,9 +37,17 @@ export function TicketDetails(props: TicketDetailsProps) {
     fetchTicket();
   }, [id]);
 
+  const handleAssignFormSubmit = (assignee: User | null) => {
+    if (assignee) {
+      setAssignee(assignee);
+    }
+  };
+
   return (
     <div className={styles['container']}>
       <h1>Welcome to TicketDetails!</h1>
+
+      <UserForm users={users} assignee={assignee} onSubmit={handleAssignFormSubmit} />
 
       <TableContainer component={Paper} sx={{ marginTop: '10px' }}>
         <Table sx={{ minWidth: 650 }} aria-label='simple table'>
@@ -56,7 +68,7 @@ export function TicketDetails(props: TicketDetailsProps) {
             </TableRow>
           </TableHead>
 
-          {ticket ? (
+          {ticket && (
             <TableBody>
               <TableRow key={ticket.id}>
                 <TableCell align='center' sx={{ width: '10%' }}>
@@ -75,8 +87,6 @@ export function TicketDetails(props: TicketDetailsProps) {
                 </TableCell>
               </TableRow>
             </TableBody>
-          ) : (
-            <span>...</span>
           )}
         </Table>
       </TableContainer>

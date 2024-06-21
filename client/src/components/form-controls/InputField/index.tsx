@@ -1,8 +1,6 @@
-import React from "react";
-import { TextField } from "@mui/material";
-import { Controller } from "react-hook-form";
-
-InputField.propTypes = {};
+import React from 'react';
+import { TextField } from '@mui/material';
+import { Controller } from 'react-hook-form';
 
 interface IInputField {
   form: { control: any; formState: any };
@@ -27,15 +25,15 @@ function InputField({ form, name, label, disabled }: IInputField) {
       render={({ field }) => (
         <TextField
           {...field}
-          margin="normal"
-          variant="outlined"
+          margin='normal'
+          variant='outlined'
           fullWidth
           label={label}
           disabled={disabled}
           error={!!hasError}
           helperText={errors?.[name]?.message}
           sx={{
-            width: "500px",
+            width: '500px',
           }}
         />
       )}
