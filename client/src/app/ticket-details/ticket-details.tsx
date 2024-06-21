@@ -49,7 +49,7 @@ export function TicketDetails({ users }: TicketDetailsProps) {
     if (ticket && assignee) {
       try {
         setAssignee(assignee);
-        ticketApi.assignUserToTicket(ticket.id, assignee.id);
+        await ticketApi.assignUserToTicket(ticket.id, assignee.id);
       } catch (error) {
         console.error('Failed to assign user to ticket', error);
       }
@@ -60,28 +60,36 @@ export function TicketDetails({ users }: TicketDetailsProps) {
     if (ticket) {
       try {
         setAssignee(null);
-        ticketApi.unAssignUserFromTicket(ticket.id);
+        await ticketApi.unAssignUserFromTicket(ticket.id);
       } catch (error) {
         console.error('Failed to unassign user from ticket', error);
       }
     }
   };
 
-  const makeComplete = async (ticket: Ticket) => {
+  const makeComplete = async (ticketItem: Ticket) => {
     try {
-      await ticketApi.markTicketAsComplete(ticket.id);
-      const ticketUpdated = await ticketApi.get(ticket.id);
-      setTicket(ticketUpdated);
+      // Update the ticket's completed status.
+      const updatedTicket: Ticket = { ...ticketItem, completed: true };
+
+      // Update the state with the new ticket.
+      setTicket(updatedTicket);
+
+      await ticketApi.markTicketAsComplete(ticketItem.id);
     } catch (error) {
       console.error('Failed to mark ticket as complete', error);
     }
   };
 
-  const makeIncomplete = async (ticket: Ticket) => {
+  const makeIncomplete = async (ticketItem: Ticket) => {
     try {
-      await ticketApi.markTicketAsIncomplete(ticket.id);
-      const ticketUpdated = await ticketApi.get(ticket.id);
-      setTicket(ticketUpdated);
+      // Update the ticket's completed status.
+      const updatedTicket: Ticket = { ...ticketItem, completed: false };
+
+      // Update the state with the new ticket.
+      setTicket(updatedTicket);
+
+      await ticketApi.markTicketAsIncomplete(ticketItem.id);
     } catch (error) {
       console.error('Failed to mark ticket as incomplete', error);
     }
