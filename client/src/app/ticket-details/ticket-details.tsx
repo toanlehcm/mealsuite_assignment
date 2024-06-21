@@ -37,9 +37,23 @@ export function TicketDetails({ users }: TicketDetailsProps) {
     fetchTicket();
   }, [id]);
 
-  const handleAssignFormSubmit = (assignee: User | null) => {
-    if (assignee) {
-      setAssignee(assignee);
+  useEffect(() => {
+    if (ticket && users) {
+      const user = users.find((user) => user.id === ticket.assigneeId) || null;
+      if (user) {
+        setAssignee(user);
+      }
+    }
+  }, [ticket, users]);
+
+  const handleAssignFormSubmit = async (assignee: User | null) => {
+    if (ticket && assignee) {
+      try {
+        await ticketApi.assignUserToTicket(ticket.id, assignee.id);
+        setAssignee(assignee);
+      } catch (error) {
+        console.error('Failed to assign user to ticket', error);
+      }
     }
   };
 
@@ -78,7 +92,7 @@ export function TicketDetails({ users }: TicketDetailsProps) {
                   {ticket.description}
                 </TableCell>
                 <TableCell align='center' sx={{ width: '10%' }}>
-                  User
+                  {assignee ? assignee.name : ''}
                 </TableCell>
                 <TableCell align='center' sx={{ width: '10%' }}>
                   <Box component={'span'} sx={{ color: ticket.completed ? 'green' : 'red' }}>
