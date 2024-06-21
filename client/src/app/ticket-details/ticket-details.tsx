@@ -3,16 +3,10 @@ import { useParams } from 'react-router-dom';
 import { Ticket, User } from '@acme/shared-models';
 import styles from './ticket-details.module.css';
 import ticketApi from 'client/src/api/ticketApi';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Box, Breadcrumbs, Button, IconButton, Link, Typography } from '@mui/material';
+import { Breadcrumbs, Link, Typography } from '@mui/material';
 import UserForm from './UserForm';
-import CancelIcon from '@mui/icons-material/Cancel';
+import TicketDetailsTable from './ticketDetailsTable';
+import TicketDetailsSkeleton from './ticketDetailsSkeleton';
 
 /* eslint-disable-next-line */
 export interface TicketDetailsProps {
@@ -23,6 +17,7 @@ export function TicketDetails({ users }: TicketDetailsProps) {
   const { id } = useParams<{ id: string }>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [assignee, setAssignee] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -32,6 +27,8 @@ export function TicketDetails({ users }: TicketDetailsProps) {
       } catch (error) {
         console.error('Failed to fetch ticket', error);
       }
+
+      setLoading(false);
     };
 
     fetchTicket();
@@ -51,8 +48,8 @@ export function TicketDetails({ users }: TicketDetailsProps) {
   const handleAssignFormSubmit = async (assignee: User | null) => {
     if (ticket && assignee) {
       try {
-        await ticketApi.assignUserToTicket(ticket.id, assignee.id);
         setAssignee(assignee);
+        ticketApi.assignUserToTicket(ticket.id, assignee.id);
       } catch (error) {
         console.error('Failed to assign user to ticket', error);
       }
@@ -62,8 +59,8 @@ export function TicketDetails({ users }: TicketDetailsProps) {
   const unassignUserFromTicket = async () => {
     if (ticket) {
       try {
-        await ticketApi.unAssignUserFromTicket(ticket.id);
         setAssignee(null);
+        ticketApi.unAssignUserFromTicket(ticket.id);
       } catch (error) {
         console.error('Failed to unassign user from ticket', error);
       }
@@ -101,71 +98,7 @@ export function TicketDetails({ users }: TicketDetailsProps) {
 
       <UserForm users={users} assignee={assignee} onSubmit={handleAssignFormSubmit} />
 
-      <TableContainer component={Paper} sx={{ marginTop: '10px' }}>
-        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-          <TableHead>
-            <TableRow>
-              <TableCell align='center' sx={{ width: '10%' }}>
-                ID
-              </TableCell>
-              <TableCell align='center' sx={{ width: '50%' }}>
-                Ticket
-              </TableCell>
-              <TableCell align='center' sx={{ width: '20%' }}>
-                Assign to
-              </TableCell>
-              <TableCell align='center' sx={{ width: '20%' }}>
-                Status
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          {ticket && (
-            <TableBody>
-              <TableRow key={ticket.id}>
-                <TableCell align='center' sx={{ width: '10%' }}>
-                  {ticket.id}
-                </TableCell>
-                <TableCell align='left' sx={{ width: '50%' }}>
-                  {ticket.description}
-                </TableCell>
-                <TableCell align='center' sx={{ width: '20%' }}>
-                  {assignee ? (
-                    <Box
-                      component={'span'}
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '5px',
-                      }}
-                    >
-                      {assignee.name}
-
-                      <IconButton onClick={unassignUserFromTicket}>
-                        <CancelIcon />
-                      </IconButton>
-                    </Box>
-                  ) : (
-                    ''
-                  )}
-                </TableCell>
-                <TableCell align='center' sx={{ width: '20%' }}>
-                  <Button
-                    variant='outlined'
-                    color={ticket.completed ? 'success' : 'error'}
-                    onClick={() => {
-                      ticket.completed ? makeIncomplete(ticket) : makeComplete(ticket);
-                    }}
-                  >
-                    {ticket.completed ? 'Complete' : 'Incomplete'}
-                  </Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          )}
-        </Table>
-      </TableContainer>
+      {loading ? <TicketDetailsSkeleton /> : <TicketDetailsTable ticket={ticket} assignee={assignee} unassignUserFromTicket={unassignUserFromTicket} makeIncomplete={makeIncomplete} makeComplete={makeComplete} />}
     </div>
   );
 }
