@@ -2,10 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { Ticket } from "@acme/shared-models";
 import styles from "./tickets.module.css";
 import TicketForm from "./TicketForm";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import queryString from "query-string";
 import { useLocation, useNavigate, useMatch } from "react-router-dom";
 import ticketApi from "client/src/api/ticketApi";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const FILTER_STATUS = {
   all: "all",
@@ -23,16 +31,15 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   const navigate = useNavigate();
   const match = useMatch("/"); // To get path, similar to nested routing.
   const [ticketList, setTicketList] = useState<Ticket[]>(tickets);
-
-  useEffect(() => {
-    setTicketList(tickets);
-  }, [tickets]);
-
   const [filterStatus, setFilterStatus] = useState(() => {
     const params = queryString.parse(location.search);
 
     return params["status"] || FILTER_STATUS.all;
   });
+
+  useEffect(() => {
+    setTicketList(tickets);
+  }, [tickets]);
 
   useEffect(() => {
     const params = queryString.parse(location.search);
@@ -78,6 +85,10 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     return ticketList.filter((ticket) => filterStatus === FILTER_STATUS.all || filterStatus === (ticket.completed ? FILTER_STATUS.completed : FILTER_STATUS.incomplete));
   }, [ticketList, filterStatus]);
 
+  const handleComplete = (ticketId: number) => {
+    // console.log("ticketId", ticketId);
+  };
+
   return (
     <div className={styles["tickets"]}>
       <h2>Tickets</h2>
@@ -102,17 +113,58 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
         </Button>
       </Box>
 
-      {renderedTicketList ? (
-        <ul>
-          {renderedTicketList.map((t) => (
-            <li key={t.id}>
-              Ticket: {t.id}, {t.description}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <span>...</span>
-      )}
+      <TableContainer component={Paper} sx={{ marginTop: "10px" }}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center" sx={{ width: "10%" }}>
+                ID
+              </TableCell>
+              <TableCell align="center" sx={{ width: "70%" }}>
+                Ticket
+              </TableCell>
+              <TableCell align="center" sx={{ width: "10%" }}>
+                Status
+              </TableCell>
+              <TableCell align="center" sx={{ width: "10%" }}>
+                Detail
+              </TableCell>
+            </TableRow>
+          </TableHead>
+
+          {renderedTicketList ? (
+            <TableBody>
+              {renderedTicketList.map((ticketItem) => (
+                <TableRow key={ticketItem.id}>
+                  <TableCell align="center" sx={{ width: "10%" }}>
+                    {ticketItem.id}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "70%" }}>
+                    {ticketItem.description}
+                  </TableCell>
+                  <TableCell align="center" sx={{ width: "10%" }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        handleComplete(ticketItem.id);
+                      }}
+                    >
+                      Complete
+                    </Button>
+                  </TableCell>
+                  <TableCell align="center" sx={{ width: "10%" }}>
+                    <IconButton>
+                      <VisibilityIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <span>...</span>
+          )}
+        </Table>
+      </TableContainer>
     </div>
   );
 }

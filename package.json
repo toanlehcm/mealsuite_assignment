@@ -10,6 +10,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@hookform/resolvers": "^3.6.0",
+    "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.20",
     "@nestjs/common": "9.2.1",
     "@nestjs/core": "9.2.1",
