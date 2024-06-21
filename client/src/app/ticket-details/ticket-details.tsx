@@ -10,8 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { FILTER_STATUS } from '../tickets/tickets';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Breadcrumbs, Button, IconButton, Link, Typography } from '@mui/material';
 import UserForm from './UserForm';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -93,7 +92,12 @@ export function TicketDetails({ users }: TicketDetailsProps) {
 
   return (
     <div className={styles['container']}>
-      <h1>Welcome to TicketDetails!</h1>
+      <Breadcrumbs aria-label='breadcrumb'>
+        <Link underline='hover' color='inherit' href='/'>
+          Tickets List
+        </Link>
+        <Typography color='text.primary'>Ticket Details</Typography>
+      </Breadcrumbs>
 
       <UserForm users={users} assignee={assignee} onSubmit={handleAssignFormSubmit} />
 

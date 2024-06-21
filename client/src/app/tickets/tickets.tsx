@@ -92,7 +92,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
 
   return (
     <div className={styles['tickets']}>
-      <h2>Tickets</h2>
+      <h2>Tickets List</h2>
 
       <TicketForm onSubmit={handleTicketFormSubmit} />
 
