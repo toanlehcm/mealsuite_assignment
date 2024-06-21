@@ -2,18 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Ticket } from '@acme/shared-models';
 import styles from './tickets.module.css';
 import TicketForm from './TicketForm';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import queryString from 'query-string';
 import { useLocation, useNavigate, useMatch } from 'react-router-dom';
 import ticketApi from 'client/src/api/ticketApi';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import EditIcon from '@mui/icons-material/Edit';
+import { TicketList } from './ticketList';
 
 export const FILTER_STATUS = {
   all: 'all',
@@ -31,6 +24,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   const navigate = useNavigate();
   const match = useMatch('/');
   const [ticketList, setTicketList] = useState<Ticket[]>(tickets);
+  const [loading, setLoading] = useState(true);
 
   const [filterStatus, setFilterStatus] = useState(() => {
     const params = queryString.parse(location.search);
@@ -56,6 +50,8 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     } catch (error) {
       console.error('Failed to create ticket', error);
     }
+
+    // setLoading(false);
   };
 
   // Filter all status.
@@ -114,57 +110,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
         </Button>
       </Box>
 
-      <TableContainer component={Paper} sx={{ marginTop: '10px' }}>
-        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-          <TableHead>
-            <TableRow>
-              <TableCell align='center' sx={{ width: '10%' }}>
-                ID
-              </TableCell>
-              <TableCell align='center' sx={{ width: '70%' }}>
-                Ticket
-              </TableCell>
-              <TableCell align='center' sx={{ width: '10%' }}>
-                Status
-              </TableCell>
-              <TableCell align='center' sx={{ width: '10%' }}>
-                Edit
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          {renderedTicketList ? (
-            <TableBody>
-              {renderedTicketList.map((ticketItem) => (
-                <TableRow key={ticketItem.id}>
-                  <TableCell align='center' sx={{ width: '10%' }}>
-                    {ticketItem.id}
-                  </TableCell>
-                  <TableCell align='left' sx={{ width: '70%' }}>
-                    {ticketItem.description}
-                  </TableCell>
-                  <TableCell align='center' sx={{ width: '10%' }}>
-                    <Box component={'span'} sx={{ color: ticketItem.completed ? 'green' : 'red' }}>
-                      {ticketItem.completed ? FILTER_STATUS.completed.toUpperCase() : FILTER_STATUS.incomplete.toUpperCase()}
-                    </Box>
-                  </TableCell>
-                  <TableCell align='center' sx={{ width: '10%' }}>
-                    <IconButton
-                      onClick={() => {
-                        navigate(`/${ticketItem.id}`);
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          ) : (
-            <span>...</span>
-          )}
-        </Table>
-      </TableContainer>
+      <TicketList renderedTicketList={renderedTicketList} />
     </div>
   );
 }
