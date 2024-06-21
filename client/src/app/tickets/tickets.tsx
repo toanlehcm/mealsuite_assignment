@@ -17,15 +17,15 @@ export const FILTER_STATUS = {
 
 export interface TicketsProps {
   tickets: Ticket[];
+  loading: boolean;
   setTickets: (tickets: Ticket[]) => void;
 }
 
-export function Tickets({ tickets, setTickets }: TicketsProps) {
+export function Tickets({ tickets, loading, setTickets }: TicketsProps) {
   const location = useLocation(); // Get params after the ?
   const navigate = useNavigate();
   const match = useMatch('/');
   const [ticketList, setTicketList] = useState<Ticket[]>(tickets);
-  const [loading, setLoading] = useState(true);
 
   const [filterStatus, setFilterStatus] = useState(() => {
     const params = queryString.parse(location.search);
@@ -35,8 +35,6 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
 
   useEffect(() => {
     setTicketList(tickets);
-
-    setLoading(false);
   }, [tickets]);
 
   useEffect(() => {
