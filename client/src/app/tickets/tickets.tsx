@@ -7,6 +7,7 @@ import queryString from 'query-string';
 import { useLocation, useNavigate, useMatch } from 'react-router-dom';
 import ticketApi from 'client/src/api/ticketApi';
 import { TicketList } from './ticketList';
+import TicketSkeletonList from './ticketSkeletonList';
 
 export const FILTER_STATUS = {
   all: 'all',
@@ -34,6 +35,8 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
 
   useEffect(() => {
     setTicketList(tickets);
+
+    setLoading(false);
   }, [tickets]);
 
   useEffect(() => {
@@ -50,8 +53,6 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     } catch (error) {
       console.error('Failed to create ticket', error);
     }
-
-    // setLoading(false);
   };
 
   // Filter all status.
@@ -110,7 +111,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
         </Button>
       </Box>
 
-      <TicketList renderedTicketList={renderedTicketList} />
+      {loading ? <TicketSkeletonList /> : <TicketList renderedTicketList={renderedTicketList} />}
     </div>
   );
 }
