@@ -85,13 +85,23 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
     return ticketList.filter((ticket) => filterStatus === FILTER_STATUS.all || filterStatus === (ticket.completed ? FILTER_STATUS.completed : FILTER_STATUS.incomplete));
   }, [ticketList, filterStatus]);
 
-  const handleComplete = async (ticket: Ticket) => {
+  const makeComplete = async (ticket: Ticket) => {
     try {
       await ticketApi.markTicketAsComplete(ticket.id);
       const newTicketList = await ticketApi.getAll();
       setTicketList(newTicketList);
     } catch (error) {
-      console.error('Failed to create ticket', error);
+      console.error('Failed to mark ticket as complete', error);
+    }
+  };
+
+  const makeIncomplete = async (ticket: Ticket) => {
+    try {
+      await ticketApi.markTicketAsIncomplete(ticket.id);
+      const newTicketList = await ticketApi.getAll();
+      setTicketList(newTicketList);
+    } catch (error) {
+      console.error('Failed to mark ticket as incomplete', error);
     }
   };
 
@@ -153,7 +163,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
                       variant='outlined'
                       color={ticketItem.completed ? 'success' : 'error'}
                       onClick={() => {
-                        handleComplete(ticketItem);
+                        ticketItem.completed ? makeIncomplete(ticketItem) : makeComplete(ticketItem);
                       }}
                     >
                       {ticketItem.completed ? 'Complete' : 'Incomplete'}
