@@ -7,6 +7,12 @@ import { Box, Button } from "@mui/material";
 import queryString from "query-string";
 import { useLocation, useNavigate, useMatch } from "react-router-dom";
 
+const FILTER_STATUS = {
+  all: "all",
+  completed: "completed",
+  incomplete: "incomplete",
+};
+
 export interface TicketsProps {
   tickets: Ticket[];
   setTickets: (tickets: Ticket[]) => void;
@@ -25,13 +31,13 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   const [filterStatus, setFilterStatus] = useState(() => {
     const params = queryString.parse(location.search);
 
-    return params["status"] || "all";
+    return params["status"] || FILTER_STATUS.all;
   });
 
   useEffect(() => {
     const params = queryString.parse(location.search);
 
-    setFilterStatus(params["status"] || "all");
+    setFilterStatus(params["status"] || FILTER_STATUS.all);
   }, [location.search]);
 
   const handleTicketFormSubmit = async (ticket: Ticket) => {
@@ -45,7 +51,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   };
 
   const showAll = () => {
-    const queryParams = { status: "all" };
+    const queryParams = { status: FILTER_STATUS.all };
     navigate({
       pathname: match?.pathname || "/",
       search: queryString.stringify(queryParams),
@@ -53,7 +59,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   };
 
   const showComplete = () => {
-    const queryParams = { status: "completed" };
+    const queryParams = { status: FILTER_STATUS.completed };
     navigate({
       pathname: match?.pathname || "/",
       search: queryString.stringify(queryParams),
@@ -61,7 +67,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
   };
 
   const showIncomplete = () => {
-    const queryParams = { status: "incomplete" };
+    const queryParams = { status: FILTER_STATUS.incomplete };
     navigate({
       pathname: match?.pathname || "/",
       search: queryString.stringify(queryParams),
@@ -70,7 +76,7 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
 
   // Rendered ticket list only change when ticket list and filter status change.
   const renderedTicketList = useMemo(() => {
-    return ticketList.filter((ticket) => filterStatus === "all" || filterStatus === (ticket.completed ? "completed" : "incomplete"));
+    return ticketList.filter((ticket) => filterStatus === FILTER_STATUS.all || filterStatus === (ticket.completed ? FILTER_STATUS.completed : FILTER_STATUS.incomplete));
   }, [ticketList, filterStatus]);
 
   return (
@@ -86,9 +92,15 @@ export function Tickets({ tickets, setTickets }: TicketsProps) {
           alignItems: "center",
         }}
       >
-        <Button onClick={() => showAll()}>Show All</Button>
-        <Button onClick={() => showComplete()}>Show Completed</Button>
-        <Button onClick={() => showIncomplete()}>Show Incomplete</Button>
+        <Button sx={{ color: filterStatus === FILTER_STATUS.all ? "primary" : "grey" }} onClick={() => showAll()}>
+          Show All
+        </Button>
+        <Button sx={{ color: filterStatus === FILTER_STATUS.completed ? "primary" : "grey" }} onClick={() => showComplete()}>
+          Show Completed
+        </Button>
+        <Button sx={{ color: filterStatus === FILTER_STATUS.incomplete ? "primary" : "grey" }} onClick={() => showIncomplete()}>
+          Show Incomplete
+        </Button>
       </Box>
 
       {renderedTicketList ? (
